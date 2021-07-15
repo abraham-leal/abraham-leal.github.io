@@ -4,6 +4,16 @@
     <title>Tags on Abraham&#39;s Blog</title>
     <link>https://abraham-leal.github.io/tags/</link>
     <description>Recent content in Tags on Abraham&#39;s Blog</description>
-    <generator>Hugo -- gohugo.io</generator><atom:link href="https://abraham-leal.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 14 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://abraham-leal.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>personal</title>
+      <link>https://abraham-leal.github.io/tags/personal/</link>
+      <pubDate>Wed, 14 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://abraham-leal.github.io/tags/personal/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>
