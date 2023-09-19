@@ -11,7 +11,7 @@ author: Abraham Leal
 github:  abraham-leal
 mathjax: yes
 ---
-This is the beginnig of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mindshift this entails. Over my time at Confluent, I've gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.
+This is the beginning of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mind-shift this entails. Over my time at Confluent, I've gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.
 
 ## How often will you write?
 
