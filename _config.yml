@@ -53,7 +53,7 @@ extensions:
 comments: utteranc  #[disqus, utteranc]
 comments_opts:
   comments_curtain: yes # leave empty to show the disqus embed directly
-  repo: https://github.com/abraham-leal/abraham-leal.github.io # The GitHub repo URL.  https://utteranc.es/
+  repo: abraham-leal/abraham-leal.github.io # The GitHub repo URL.  https://utteranc.es/
   issue_term: blog-comments # The GitHub issue label
   label: # The GitHub comments label
   theme: github-light # The GitHub comment's there. e.g. github-dark
