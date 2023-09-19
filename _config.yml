@@ -1,0 +1,88 @@
+# Site settings
+title: "A Mind of Events and Streams"
+description: "Abraham Leal's recanting of real problems envountered in stream processing, and how to deal with them." # this means to ignore newlines until "baseurl:"'
+permalink: ':title:output_ext'
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://www.amindofeventsandstreams.com" # the base hostname & protocol for your site, e.g. http://example.com
+logo: "/assets/img/Logo.svg"
+logo-icon: "/assets/img/Logo.svg"
+logo-icon-SEO: "/assets/img/genBanner.png" # must be a non SVG file
+
+# Night/Dark mode
+# Default mode is "auto", "auto" is for auto nightshift
+# (19:00 - 07:00), "manual" is for manual toggle, and
+# "on/off" is for default on/off.
+#
+# Whatever the user's choice is, it will supersede the
+# default setting of the site and be kept during the
+# visit (session). Only the dark mode setting is "manual",
+# it will be always kept on every visit (i.e. no matter
+# the browser is closed or not)
+night_mode: "auto"
+
+#logo-dark: "/assets/img/Logo.svg"
+highlight_theme: syntax-base16.monokai.dark # select a dark theme for the code highlighter if needed
+
+# Author settings
+author: Abraham Leal # add your name
+author-pic: AbrahamLeal.jpg
+about-author: Husband, Dog Dad, Developer, and Architect. Currently working at Confluent as advisor to various companies in their streaming journey.
+
+# Contact links
+email: leal901@gmail.com # Add your Email address
+phone: # Add your Phone number
+website: https://www.amindofeventsandstreams.com # Add your website
+linkedin: abrahamlav # Add your Linkedin handle
+github: abraham-leal # Add your Github handle
+
+# Newsletter
+mailchimp: "https://amindofeventsandstreams.us21.list-manage.com/subscribe/post?u=c0ddb6fcbd6ee1f7a2796fe85&amp;id=30145d71e7"
+
+# Tracker
+analytics: G-CJMRN0SXBQ
+
+# Paginate
+paginate: 6
+paginate_path: 'page:num'
+words_per_minute: 200
+
+extensions:
+  mermaid_enable: true
+
+# Comments
+comments: utteranc  #[disqus, utteranc]
+comments_opts:
+  comments_curtain: yes # leave empty to show the disqus embed directly
+  repo: https://github.com/abraham-leal/abraham-leal.github.io # The GitHub repo URL.  https://utteranc.es/
+  issue_term: blog-comments # The GitHub issue label
+  label: # The GitHub comments label
+  theme: github-light # The GitHub comment's there. e.g. github-dark
+  # Disqus
+  discus_identifier: # Add your discus identifier
+
+# Build settings
+markdown: kramdown
+mathjax: true
+highlighter: rouge
+compress_html:
+  clippings: all
+  comments: all
+  startings: [html, head, body]
+
+# Outputting
+timezone: CDT # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+category_archive:
+  type: liquid
+  path: /categories/
+
+sass:
+  style: compressed
+
+plugins:
+  - jekyll-paginate
+  - jekyll-feed
+  - jekyll-sitemap
+
+include: [_pages]
+exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock", "package-lock.json", "assets/css/sass/"]

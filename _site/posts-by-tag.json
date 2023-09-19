@@ -1,0 +1,24 @@
+
+
+[   
+      
+  {
+  "tag" : "intro",
+  "posts" : [
+      
+      "./intro.html"
+      
+    ]
+  } ,
+    
+      
+  {
+  "tag" : "personal",
+  "posts" : [
+      
+      "./intro.html"
+      
+    ]
+  } 
+    
+]

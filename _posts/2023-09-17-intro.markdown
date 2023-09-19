@@ -1,0 +1,30 @@
+---
+layout: post
+read_time: true
+show_date: true
+title:  Starting a Journey
+date:   2023-09-17 22:37:00 -0600
+description: Why is Abraham doing this?
+img: StreamMindBanner.png
+tags: [personal, intro]
+author: Abraham Leal
+github:  abraham-leal
+mathjax: yes
+---
+This is the beginnig of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mindshift this enatils. Over my time at Confluent, I've gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.
+
+## How often will you write?
+
+I will be kind to myself, and aim for a quarterly cadence. These are meant to be comprehendise, laid out blog posts of very specific situations. It will take time to get each right, and as we all know, time is the one precious thing we are always trying to get more of. I am in a beautiful stage of life where Work, Family, Friends, and whatnot are always asking for more of me. This blog is important, and as I learn more time management, I will aim to increase cadence.
+
+## Where did you get the name of the blog?
+
+You may think from the name that I am an avid Tolkien reader, and while I do love the movies, I haven't had the pleasure to read the books. I am a big fan of [CGP Grey's Youtube creations](https://www.youtube.com/@CGPGrey), and the name of this blog is a tribute to his now-deleted reddit username.
+
+## Will you share company specifics?
+
+No. Privacy is important. No matter the blog, know I wouldn't have written about it if I hadn't seen it at multiple places, and the write up is a conglomeration of the experiences. No single blog will be connected to a single company.
+
+## Thank You
+
+Lastly, I'd like to take you for taking the time of reading so far, and if you are interested in the few smart things I've got to say, I'd encourage you to sign up for email alerts on the blog posts. Thank you, and have a beautiful day!
