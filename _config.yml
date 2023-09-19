@@ -4,7 +4,7 @@ description: "Abraham Leal's recanting of real problems envountered in stream pr
 permalink: ':title:output_ext'
 baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://www.amindofeventsandstreams.com" # the base hostname & protocol for your site, e.g. http://example.com
-logo: "/assets/img/Logo.svg"
+#logo: "/assets/img/Logo.svg"
 logo-icon: "/assets/img/Logo.svg"
 logo-icon-SEO: "/assets/img/genBanner.png" # must be a non SVG file
 
