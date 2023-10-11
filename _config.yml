@@ -1,10 +1,10 @@
 # Site settings
 title: "A Mind of Events and Streams"
-description: "Abraham Leal's recanting of real problems envountered in stream processing, and how to deal with them." # this means to ignore newlines until "baseurl:"'
+description: "Abraham Leal's recanting of real problems encountered in stream processing, and how to deal with them." # this means to ignore newlines until "baseurl:"'
 permalink: ':title:output_ext'
 baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://www.amindofeventsandstreams.com" # the base hostname & protocol for your site, e.g. http://example.com
-#logo: "/assets/img/Logo.svg"
+logo: "/assets/img/otter4.png"
 logo-icon: "/assets/img/Logo.svg"
 logo-icon-SEO: "/assets/img/genBanner.png" # must be a non SVG file
 

@@ -6,6 +6,8 @@
   "tag" : "intro",
   "posts" : [
       
+      "./kconnect-issues-and-magic.html",
+      
       "./intro.html"
       
     ]
@@ -15,6 +17,8 @@
   {
   "tag" : "personal",
   "posts" : [
+      
+      "./kconnect-issues-and-magic.html",
       
       "./intro.html"
       
