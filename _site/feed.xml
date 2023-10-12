@@ -1,20 +1,84 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-10-11T16:07:05+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">A Mind of Events and Streams</title><subtitle>Abraham Leal's recanting of real problems encountered in stream processing, and how to deal with them.</subtitle><author><name>Abraham Leal</name></author><entry><title type="html">Kafka Connect: A love/hate relationship</title><link href="http://localhost:4000/kconnect-issues-and-magic.html" rel="alternate" type="text/html" title="Kafka Connect: A love/hate relationship" /><published>2023-10-10T18:00:00+00:00</published><updated>2023-10-10T18:00:00+00:00</updated><id>http://localhost:4000/kconnect-issues-and-magic</id><content type="html" xml:base="http://localhost:4000/kconnect-issues-and-magic.html"><![CDATA[<p>This is the beginning of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mind-shift this entails. Over my time at Confluent, I’ve gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-10-12T21:33:03+00:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">A Mind of Events and Streams</title><subtitle>Abraham Leal's recanting of real problems encountered in stream processing, and how to deal with them.</subtitle><author><name>Abraham Leal</name></author><entry><title type="html">Kafka Connect: A love/hate relationship</title><link href="http://localhost:4000/kconnect-issues-and-magic.html" rel="alternate" type="text/html" title="Kafka Connect: A love/hate relationship" /><published>2023-10-10T18:00:00+00:00</published><updated>2023-10-10T18:00:00+00:00</updated><id>http://localhost:4000/kconnect-issues-and-magic</id><content type="html" xml:base="http://localhost:4000/kconnect-issues-and-magic.html"><![CDATA[<p>Apache Kafka is the de-facto streaming platform for businesses today, and with it gaining popularity, so has the associated subproject “Kafka Connect”. Kafka Connect allows to use pre-made “Connectors” to send and receive data to/from Kafka. They require no code, it is all configuration driven. This provides a lot of advantages and a lot of headaches. In this blog we’ll talk about both, how to get around them, and hopefully there will be enough information to help you make good decisions around its usage.</p>
 
-<h2 id="how-often-will-you-write">How often will you write?</h2>
+<p>We will use the community’s <a href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html">Debezium Postgres Connector</a> to talk about sourcing data from Postgres to Kafka, and Confluent’s <a href="https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc">JDBC Sink Connector</a> to talk about sending data from Kafka to another database.</p>
 
-<p>I will be kind to myself, and aim for a quarterly cadence. These are meant to be comprehensive, laid out blog posts of very specific situations. It will take time to get each right, and as we all know, time is the one precious thing we are always trying to get more of. I am in a beautiful stage of life where Work, Family, Friends, and whatnot are always asking for more of me. This blog is important, and as I learn more time management, I will aim to increase cadence.</p>
+<h2 id="a-primer-on-how-kafka-connect-works">A primer on how Kafka Connect works</h2>
 
-<h2 id="where-did-you-get-the-name-of-the-blog">Where did you get the name of the blog?</h2>
+<p>The advent of Cloud has abstracted a lot on how things run, and <a href="https://www.confluent.io/confluent-cloud/">Confluent Cloud</a> does a good job at hiding the complexity. However, I believe understanding how something works really allows you to make the best decisions around whether it is a good fit for you. So here is a quick primer:</p>
 
-<p>You may think from the name that I am an avid Tolkien reader, and while I do love the movies, I haven’t had the pleasure to read the books. I am a big fan of <a href="https://www.youtube.com/@CGPGrey">CGP Grey’s Youtube creations</a>, and the name of this blog is a tribute to his now-deleted reddit username.</p>
+<ol>
+  <li>Kafka Connect is a distributed system, separate from Kafka, but powered by it</li>
+  <li><em>Kafka Connect</em> is a platform, <em>Connectors</em> run on it</li>
+  <li>Kafka Connect has <em>source connectors</em> which bring data from systems into Kafka, and <em>sink connectors</em> which send data from Kafka into end systems</li>
+  <li>Kafka Connect uses an internal topic in Kafka to coordinate source connectors, and the consumer group protocol to coordinate sink connectors</li>
+  <li>Connectors aren’t made by one organization, they are made by the community, and the community is strong - providing 100s of connectors for organizations to use. However, this also means that quality and feature sets vary greatly</li>
+</ol>
 
-<h2 id="will-you-share-company-specifics">Will you share company specifics?</h2>
+<p><img src="assets/img/posts/KConnectOverview.png" alt="Kafka Connect Overview" /></p>
 
-<p>No. Privacy is important. No matter the blog, know I wouldn’t have written about it if I hadn’t seen it at multiple places, and the write up is a conglomeration of the experiences. No single blog will be connected to a single company.</p>
+<p>That should give us a good enough base to start talking about how things work. Lets get started.</p>
 
-<h2 id="thank-you">Thank You</h2>
+<h2 id="source-connectors">Source Connectors</h2>
 
-<p>Lastly, I’d like to thank you for taking the time of reading so far, and if you are interested in the few semi-smart things I’ve got to say, I’d encourage you to sign up for email alerts on the blog posts. Thank you, and have a beautiful day!</p>]]></content><author><name>Abraham Leal</name></author><category term="personal" /><category term="intro" /><summary type="html"><![CDATA[A write up on what makes Kafka Connect such a pain to work with - yet so useful in the building of real time data pipelines. We'll discuss the postgres connector as the main example, and provide some gotchas that are general to the tool.]]></summary></entry><entry><title type="html">Starting a Journey</title><link href="http://localhost:4000/intro.html" rel="alternate" type="text/html" title="Starting a Journey" /><published>2023-09-18T04:37:00+00:00</published><updated>2023-09-18T04:37:00+00:00</updated><id>http://localhost:4000/intro</id><content type="html" xml:base="http://localhost:4000/intro.html"><![CDATA[<p>This is the beginning of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mind-shift this entails. Over my time at Confluent, I’ve gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.</p>
+<h3 id="on-sourcing-from-databases">On sourcing from databases</h3>
+
+<p>Postgres is a very popular database out there, which makes the Postgres connector a popular connector as well. Thankfully, the community has rallied around <a href="https://debezium.io">Debezium</a> as the project to congregate and work on very important connectors, and Postgres is one of them.</p>
+
+<p>Sourcing from databases is hard, if you take some time to look into how <a href="https://github.com/debezium/debezium">Debezium has standardized</a> in reading from WALs, you’ll realize is no joke to ensure no data loss, no data duplication, as well as high uptime. Once you’ve made this realization we are set: We need the community’s standard connector to send data from Postgres to Kafka instead of doing our own thing and most likely not do as good of a job (I’ve seen plenty of companies that do this, for some reason). Now that we’ve made the commitment to use the connector, we have to understand it. How does it all work?</p>
+
+<p>To read data from a database, it would be extremely inefficient and wasteful to issue query reads and then send that data back to Kafka (although there is a <a href="https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc">connector</a> that does that if you wish) so instead, what most connectors will do is listen to the Database’s Write Ahead Log (WAL). Some DB’s provide direct and easy access to their WAL, which is nice! would be so <a href="https://docs.oracle.com/en/database/oracle/oracle-database/18/upgrd/deprecated-features-oracle-database-12c-r2.html#GUID-87A754A3-AC6B-4F84-8C36-AB90AC5032D4">jerkish not to!</a> Anyways, Postgres does, and it does so through “logical decoding” (their fancy name for it). Here lies our first blessing / problem.</p>
+
+<h4 id="reading-from-wals">Reading from WALs</h4>
+
+<p>There are 3 common problems that plague users of Kafka Connect whenever using a Change Data Capture (CDC) connector such as the Debezium Postgres connector:</p>
+
+<ul>
+  <li>Old version of Postgres: Postgres has been around for a while, but logical decoding hasn’t, and formal first-class support is even more recent. Users of old versions of Postgres will have to utilize a community decoder plugin. These have been found to have <a href="https://issues.redhat.com/browse/DBZ-2175?jql=project%20%3D%20DBZ%20AND%20resolution%20%3D%20Unresolved%20AND%20text%20~%20%22decoderbuf%20OR%20wal2json%22%20ORDER%20BY%20priority%20DESC%2C%20updated%20DESC">many issues</a>, and some of them have workarounds (too many for us to get into this post), but this will surely slow down deployment speed and resilience. Worth nothing that newer versions have a standard decoder called <code class="language-plaintext highlighter-rouge">pgoutput</code> that performs very well and is backed by the project as a whole.</li>
+  <li>Size of the WAL: Obviously databases have to be space conscious, and they don’t keep the WAL forever; However, in streaming we’ve directly plugged into it and one day the connector might fail but the database will keep chugging along… which means that when the connector comes back, it has to catch up. What if data that it needs to catch up to has already been deleted by Postgres? Using the Postgres also means negotiating with your DB Admin how long the WAL can be kept, and that becomes the maximum amount of time you have to resolve an issue with the connector… before you have to start recovery actions.</li>
+  <li>Most source connectors don’t offer exactly once (<a href="https://issues.redhat.com/browse/DBZ-5467">yet</a>): This is true for <a href="https://issues.redhat.com/browse/DBZ-5467">Debezium connectors</a>, which means that when it all goes wrong, you will have duplicates (but no data loss, as they do offere at least once). For <em>MOST</em> applications, this is sufficient, but a lot of people go into this connector expecting exactly once deliveries.</li>
+</ul>
+
+<p>The above issues make the primordial task of the connector (getting data out of the system) quite the math equation that has to be solved. What is important is that it CAN be solved, but does require careful tuning and testing. This pain get exacerbated  by the very common situation that the people developing data streaming flows aren’t DB Admins, so they would like not to worry about these.</p>
+
+<p>Anyways, you’ve tamed the sourcing of the data, then you need to ensure it is actually sent in a way that is useful, which is where pain #2 pops up.</p>
+
+<h4 id="delivery-and-interpretation-of-database-records-in-kafka">Delivery and interpretation of database records in Kafka</h4>
+
+<p>Data Types. They make a developers life harder and easier at the same time. Can’t live without them.</p>
+
+<p>When sourcing data from Databases in order for it to be usable somewhere else, you can imagine maintaining data types or at least converting them properly is paramount. With such requirements, the Kafka community has been evolving in their idea on how to handle these, here are some challenges that come with the territory:</p>
+
+<ul>
+  <li>Data interpretation and evolution is hard: Everything that goes into Kafka is serialized as a byte array, which means that when read it requires a way to deserialize it. By default, Kafka provides a JSON serializer, but as you probably know, sending large amounts of data with naive JSON serialization is actually really inefficient. Confluent has had the <a href="https://docs.confluent.io/platform/current/schema-registry/index.html">Schema Registry</a> for a while to address this issue as well as Data Governance and Data Quality problems. However, there are various solutions in the community that aim to help solve these problems. (I go quite into depth on this issue in a <a href="https://www.youtube.com/watch?v=ZIJB8cs-cJU">podcast</a> with the great <a href="https://www.youtube.com/@DeveloperVoices">Kris Jenkins</a>). This is actually a multi-tiered issue:</li>
+</ul>
+
+<ol>
+  <li>When consumed from the Database, data comes with the DBs data type</li>
+  <li>When converted into a Kafka Connect record, it gets casted into a set of types pre-defined and available in <a href="https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-data-types">documentation</a></li>
+  <li>When sent into Kafka, the data is type-less</li>
+  <li>When consumed, you have to cast again, either to connect’s internal data types (which shouldn’t be a problem since it was sourced with connect) or to a data type that is useful for the application. ksqlDB <a href="Ihttps://docs.ksqldb.io/en/latest/reference/sql/data-types/">famously does not</a> have good compatibility with all the possible data types a DB may have.</li>
+</ol>
+
+<p>Long story short, be careful around what your data gets converted to, and ensure you are comfortable with the casting. There are various connector configurations to change the behavior here, specially around time (always the easiest problem to solve in production systems :) /s) I highly recommend utilizing Schema Registry here.</p>
+
+<ul>
+  <li>
+    <p>In-flight transforms: One of the more useful features in Kafka Connect is the ability to modify every record that passes through it slightly to fit your needs. These transformations are pluggable and the community has a sprawl of them. <a href="https://debezium.io/documentation/reference/stable/transformations/index.html">Debezium has some that are very helpful</a>. One of the problems that get developer teams is that because of how useful it would be to just modify data on the fly before even storing it, they try to fit all data transformations in these and you can get pretty creative given correctly chaining transforms and predicates. However, the reality is that these are meant to be lightweight because they can severely hamper performance of the connector. If you really need involved transformations I would try Kafka Streams, Apache Flink, or ksqlDB.</p>
+  </li>
+  <li>
+    <p>Scalability: More often than not, the connector will be faster than whatever system you are sourcing from, which is mostly great! However, something to note is that most source connectors will be limited to 1 task (tasks are the unit of parallelism in Kafka Connect) due to ensuring total order of updates from the database. This may hamper you, specifically if you have expensive transforms in it. A good rule of thumb is to separate table updates into various connectors in order to ensure being able to keep up for high traffic databases.</p>
+  </li>
+</ul>
+
+<h4 id="maintenance">Maintenance</h4>
+
+<h4 id="last-note-on-source-connectors">Last note on source connectors</h4>
+
+<p>I know it seems like I am only talking doom and gloom, but connectors are one of the best things to happen to real-time data processing. I’m trying to highlight that they are unfortunately not that easily to productionalize, but once you got them down, they work really, really well.</p>
+
+<p>Connector: High upfront work, medium maintenance (relatively), but doing it yourself would be worse.</p>
+
+<h2 id="sink-connectors">Sink Connectors</h2>]]></content><author><name>Abraham Leal</name></author><category term="kafka" /><category term="streaming" /><category term="event sourcing" /><category term="connect" /><category term="databases" /><summary type="html"><![CDATA[A write up on what makes Kafka Connect such a pain to work with - yet so useful in the building of real time data pipelines. We'll discuss the Postgres connector as the main example, and provide some gotchas that are general to the tool.]]></summary></entry><entry><title type="html">Starting a Journey</title><link href="http://localhost:4000/intro.html" rel="alternate" type="text/html" title="Starting a Journey" /><published>2023-09-18T04:37:00+00:00</published><updated>2023-09-18T04:37:00+00:00</updated><id>http://localhost:4000/intro</id><content type="html" xml:base="http://localhost:4000/intro.html"><![CDATA[<p>This is the beginning of my attempt to share stories from seeing multiple companies adopt an event-driven architecture, and the ensuing issues that come with it given the big mind-shift this entails. Over my time at Confluent, I’ve gotten to work with some really cool engineers and companies that affect our everyday lives and use Apache Kafka extensively. My hope with this blog is that by sharing a detailed account of very specific problems in the eventing world it will help future developers implement it more easily - or at least go a bit more educated into it.</p>
 
 <h2 id="how-often-will-you-write">How often will you write?</h2>
 

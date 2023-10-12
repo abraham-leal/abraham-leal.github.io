@@ -34,8 +34,8 @@
     "logo": {
         "@type": "ImageObject",
         "encodingFormat": "image/png",
-        "contentUrl": "http://localhost:4000/assets/img/genBanner.png",
-        "url": "http://localhost:4000/assets/img/genBanner.png"},
+        "contentUrl": "http://localhost:4000/assets/img/branding/otter.png",
+        "url": "http://localhost:4000/assets/img/branding/otter.png"},
     "name" : "A Mind of Events and Streams"}
 }
 </script>
@@ -215,7 +215,7 @@
       </nav>
       
       
-      <div class="logo"><a href="./"><img class="logo" id="logo" src="./assets/img/otter4.png" alt="A Mind of Events and Streams"></a></div>
+      <div class="logo"><a href="./"><img class="logo" id="logo" src="./assets/img/branding/otter.png" alt="A Mind of Events and Streams"></a></div>
       <div class="search-icon-container">
         <span class="search-icon"><a><i class="fa fa-search" aria-hidden="true"></i></a></span>
       </div>
@@ -364,9 +364,9 @@
     saveThemeData(themeData);
     html.dataset.theme = nightShift ? 'dark' : 'light';
     if (nightShift) {
-        logo.setAttribute("src", "./");
+        logo.setAttribute("src", "./assets/img/branding/otter.png");
     } else {
-        logo.setAttribute("src", "./assets/img/otter4.png");
+        logo.setAttribute("src", "./assets/img/branding/otter.png");
     }
     setTimeout(function() {
         sw.checked = nightShift ? true : false;

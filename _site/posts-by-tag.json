@@ -3,12 +3,50 @@
 [   
       
   {
+  "tag" : "connect",
+  "posts" : [
+      
+      "./kconnect-issues-and-magic.html"
+      
+    ]
+  } ,
+    
+      
+  {
+  "tag" : "databases",
+  "posts" : [
+      
+      "./kconnect-issues-and-magic.html"
+      
+    ]
+  } ,
+    
+      
+  {
+  "tag" : "event sourcing",
+  "posts" : [
+      
+      "./kconnect-issues-and-magic.html"
+      
+    ]
+  } ,
+    
+      
+  {
   "tag" : "intro",
   "posts" : [
       
-      "./kconnect-issues-and-magic.html",
-      
       "./intro.html"
+      
+    ]
+  } ,
+    
+      
+  {
+  "tag" : "kafka",
+  "posts" : [
+      
+      "./kconnect-issues-and-magic.html"
       
     ]
   } ,
@@ -18,9 +56,17 @@
   "tag" : "personal",
   "posts" : [
       
-      "./kconnect-issues-and-magic.html",
-      
       "./intro.html"
+      
+    ]
+  } ,
+    
+      
+  {
+  "tag" : "streaming",
+  "posts" : [
+      
+      "./kconnect-issues-and-magic.html"
       
     ]
   } 
