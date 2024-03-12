@@ -134,7 +134,7 @@ There are a few ways to mitigate these issues, at a high level:
 - For http endpoints, ensure the target system can access parallel requests and that you are batching these in an efficient manner (Hello Salesforce Sinks)
 - For vendor end systems that don't behave like a datastore, it ultimately ends upbeing a game of slowing down the connector to match what the end system can tolerate, and batch as efficiently as possible to ensure high throughput of data transfers. You can slow down the connector by tunning fetch settings of the underlying consumers of the connector, and batch better by tunning the underlying delivery system the connector uses if the connector makes that available.
 
-### Last note on source connectors
+### Last note on sink connectors
 
 Sink connectors are extremely useful, and to be honest, often more rescillient in terms of maintenance than source connectors, so they are quite nice. Their state tracking is mostly through the kafka consumer group offset management system, which makes it a breeze to modify the starting point.
 
