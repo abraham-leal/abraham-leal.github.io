@@ -80,13 +80,66 @@ Long running source connectors can come into issues as your organization evolves
 
 ##### Rehydrating
 
-This has become such a common occurrence that most Debezium connectors now implement snapshots while running as a common operation that can be triggered by command messages to the connector. Rehydration is 
+This has become such a common occurrence that most Debezium connectors now implement snapshots while running as a common operation that can be triggered by command messages to the connector. Rehydration is necessary in cases where the target datastore of the data loses it, and you must reload all the data from the source db to bring the complete state to target (this only happens if you don't leverage compacted topics, but thats another story).
+
+If you are using the aforementioned Debezium connectors, you are likely in a good spot to do this easily. Other connectors don't allow this very easily unless you stand up a completely new connector, due to how hard it is to modify source state progress in Kafka for source connectors.
+
+##### Re-running the connector
+
+This is the most commonly scripted mainteinance operation out there. Connectors fail all the time due to network issues. The reality is that unreliabile networks is the only reliable truth in the networking realm. Projects out there like Confluent for Kubernetes and Strimzi provide auto-restart capabilities in their K8s operators. Do yourself a favor and implement this from day one.
+
+##### Scaling the connector
+
+Scaling the connector in tasks up and down is likely the piece of maintenance you'll face the most. Most of the community would like connectors to have policy-based scaling, Kind of what KEDA did for Kafka Clients. The project doesn't address this, and neither do commercial offerings out there. I'd recommend making the application team own scaling actions of the connector, or implement your own scaler that listens for connector metrics and scales up/down though them.
 
 
 #### Last note on source connectors
 
 I know it seems like I am only talking doom and gloom, but connectors are one of the best things to happen to real-time data processing. I'm trying to highlight that they are unfortunately not that easily to productionalize, but once you got them down, they work really, really well. 
 
-Connector: High upfront work, medium maintenance (relatively), but doing it yourself would be worse.
+Connectors: High upfront work, medium maintenance (relatively), but doing it yourself would be worse.
 
 ## Sink Connectors
+
+### Message Interpretation
+
+The #1 problem that surfaces with sink connectors is data interpretation. It is common for developers to try to deserialize the message in a format it didn't come in, or to try and sink a message with a schema that isn't supported by the target system. For both these issues, I highly suggest integrating with Confluent's Schema Registry from the get-go to avoid most of the problems. 
+
+Data SerDes is always a big topic when I speak with a customer starting their data streaming journey, my recommendation is always (in this order):
+
+1. If your company already has a preference between Avro/Protobuf/Json, stick with that
+2. If there is no preferece, use Protobuf
+3. If you can't use Protobuf, use Avro
+4. If you can't use Protobuf or Avro, might as well give up, because JSON Schema is trash
+
+Now that you have a well defined schema, I'd look into what the conector expected the schema of the message to be. This is basically different for every single sink connector, so research it well, and if you need to modify data, leverage SMTs or a stream processor like Kafka Streams/ksqlDB/Flink.
+
+### Target system success/failure tracking
+
+A lot of organizations would like to keep track of whether a record that was consumed by a connector was successfully delivered to the target system, or if it wasn't, why not? the Kafka project sought to address this by [KIP-298](https://cwiki.apache.org/confluence/display/KAFKA/KIP-298%3A+Error+Handling+in+Connect) then expanding in [KIP-610](https://cwiki.apache.org/confluence/display/KAFKA/KIP-610%3A+Error+Reporting+in+Sink+Connectors) but keep in mind, while KIP-298 work is available in all connectors because its error reporting by the franework, KIP-610 is an optional implementation for the connector and not all connectors offer it.
+
+A big builder of connectors in the Community is Confluent, and they sought to address this faster with their Connect Error Reporter which was implemented before KIP-610 ever made it to the project. This reporter is largely better than the framework implementation, but it is not avaialble in all connectors, and certainly not in all Confluent connectors. YMMV, but keeping these options in mind when using a sink connector is important. To summarize:
+
+- All connectors have KIP-298
+- SOME connectors have KIP-610
+- SOME Confluent-built connectors have the Confluent Error Reporter
+
+### Optimization for large datasets
+
+A very common scenario is that organizations will the connector consume the data from Kafka very fast, but the insert/upsert to the targer is extremely slow, causing an extremely slow pipeline, or even worse, a timeout of message delivery that causes the connector to be considered dead by the poll loop constraints. 
+
+There are a few ways to mitigate these issues, at a high level:
+
+- For database target systems, ensure you implement indices to make upserts faster
+- For http endpoints, ensure the target system can access parallel requests and that you are batching these in an efficient manner (Hello Salesforce Sinks)
+- For vendor end systems that don't behave like a datastore, it ultimately ends upbeing a game of slowing down the connector to match what the end system can tolerate, and batch as efficiently as possible to ensure high throughput of data transfers. You can slow down the connector by tunning fetch settings of the underlying consumers of the connector, and batch better by tunning the underlying delivery system the connector uses if the connector makes that available.
+
+### Last note on source connectors
+
+Sink connectors are extremely useful, and to be honest, often more rescillient in terms of maintenance than source connectors, so they are quite nice. Their state tracking is mostly through the kafka consumer group offset management system, which makes it a breeze to modify the starting point.
+
+A common request i see is how to do data completenes reconcilliation between the data extracted at the source and delivered at the target. This is a big topic in distributed systems with hard answers, but commonly a flavor of Distributed Tracing is used to ensure you have a reliable reconcilliation story.
+
+## Summary
+
+We have discussed the Kafka Connect framework, source connectors, and sink connectors. Overall, Connectors are extremely useful, but they don't come without having to consider how they affect source and target systems, and are limited to how they expect data to be handled. However, they enforce best practices implementation on integrating systems from and to Kafka, so they are overall an excellent tool for organizations with Apache Kafka in their backend.
